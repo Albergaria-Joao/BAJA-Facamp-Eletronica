@@ -1,29 +1,27 @@
-// * Copyright 2019 RoboCore.
-// * Escrito por Renan Piva (10/04/2019).
+#include <OneWire.h> // É preciso instalar essas bibliotecas
+#include <DallasTemperature.h> // É preciso instalar essas bibliotecas
 
-
-// Inclusao das bibliotecas
-#include <OneWire.h>
-#include <DallasTemperature.h>
-
-const int PINO_ONEWIRE = 12; // Define pino do sensor
-OneWire oneWire(PINO_ONEWIRE); // Cria um objeto OneWire
-DallasTemperature sensor(&oneWire); // Informa a referencia da biblioteca dallas temperature para Biblioteca onewire
-DeviceAddress endereco_temp; // Cria um endereco temporario da leitura do sensor
+const int PINO_ONEWIRE = 12;
+OneWire oneWire(PINO_ONEWIRE);
+DallasTemperature sensor(&oneWire);
+DeviceAddress endereco_temp;
 
 void setup() {
-  Serial.begin(9600); // Inicia a porta serial
-  Serial.println("Medindo Temperatura"); // Imprime a mensagem inicial
-  sensor.begin(); ; // Inicia o sensor
-}
-  
-void loop() {
-  sensor.requestTemperatures(); // Envia comando para realizar a conversão de temperatura
-  if (!sensor.getAddress(endereco_temp,0)) { // Encontra o endereco do sensor no barramento
-    Serial.println("SENSOR NAO CONECTADO"); // Sensor conectado, imprime mensagem de erro
-  } else {
-    Serial.print("Temperatura = "); // Imprime a temperatura no monitor serial
-    Serial.println(sensor.getTempC(endereco_temp), 1); // Busca temperatura para dispositivo
+  Serial.begin(9600);
+  Serial.println("Medindo Temperatura");
+  sensor.begin();
+
+  if (!sensor.getAddress(endereco_temp, 0)) {
+    Serial.println("SENSOR NAO CONECTADO");
+    while (1); // Stop the program
   }
+}
+
+
+void loop() {
+  sensor.requestTemperatures();
+  Serial.print("Temperatura = ");
+  Serial.println(sensor.getTempC(endereco_temp), 1);
   delay(1000);
 }
+
