@@ -1,26 +1,25 @@
-#define BUTTON_PIN 7 // Botão no pino 2
+#define HALL_PIN 2 // Pino do sinal do KY-003
 unsigned long lastPulseTime = 0;   
 float rpmInstant = 0;              
 float rpmFiltered = 0;             
-const float alpha = 0.2;           
+const float alpha = 0.3; // Constante que suaviza a variação do RPM     
 unsigned long lastDebounceTime = 0; 
-const unsigned long debounceDelay = 50; 
-bool lastButtonState = HIGH;
+const unsigned long debounceDelay = 50; // Serve para impedir que várias medidas muito próximas atuem como ruído e elevem muito o RPM
+bool lastHallState = HIGH; // Estado anterior do sensor
 
 const float decayRate = 10; // Quanto o RPM cai por segundo quando não há pulsos
 int count = 0;
 
-
 void setup() {
   Serial.begin(9600);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(HALL_PIN, INPUT); // Sem PULLUP
 }
 
 void loop() {
-  bool buttonState = digitalRead(BUTTON_PIN);
+  bool hallState = digitalRead(HALL_PIN);
 
-  // Detecta borda de descida (pressionamento)
-  if (lastButtonState == HIGH && buttonState == LOW) {
+  // Detecta borda de descida (ímã passou pelo sensor)
+  if (lastHallState == HIGH && hallState == LOW) {
     count++;
     unsigned long now = millis();
 
@@ -37,7 +36,7 @@ void loop() {
       lastDebounceTime = now;
     }
   }
-  lastButtonState = buttonState;
+  lastHallState = hallState;
 
   // Atualiza filtro
   rpmFiltered = (alpha * rpmInstant) + ((1 - alpha) * rpmFiltered);
@@ -50,9 +49,9 @@ void loop() {
     }
   }
 
-  // Exibe a cada 200ms
+  // Exibe a cada 500ms
   static unsigned long lastPrint = 0;
-  if (millis() - lastPrint >= 200) {
+  if (millis() - lastPrint >= 500) {
     lastPrint = millis();
     Serial.print("RPM: ");
     Serial.println(rpmFiltered);
