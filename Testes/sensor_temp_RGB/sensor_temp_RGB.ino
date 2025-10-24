@@ -1,10 +1,12 @@
 #include <OneWire.h> // É preciso instalar essas bibliotecas
 #include <DallasTemperature.h> // É preciso instalar essas bibliotecas
+#include <SoftwareSerial.h>
 
 const int PINO_ONEWIRE = 6;
 OneWire oneWire(PINO_ONEWIRE);
 DallasTemperature sensor(&oneWire);
 DeviceAddress endereco_temp;
+SoftwareSerial xbee(2, 3);
 
 int azul = 9;//Atribui o valor 9 a variável azul
 int verde = 10;//Atribui o valor 10 a variável verde
@@ -18,8 +20,10 @@ void setup(){
   pinMode(LED_BUILTIN, OUTPUT);
 
   Serial.begin(9600);
-  Serial.println("Medindo Temperatura");
+  //Serial.println("Medindo Temperatura");
   sensor.begin();
+
+  xbee.begin(9600);
 
   if (!sensor.getAddress(endereco_temp, 0)) {
     Serial.println("SENSOR NAO CONECTADO");
@@ -33,16 +37,20 @@ void loop(){
 
   sensor.requestTemperatures();
   long reading = sensor.getTempC(endereco_temp);  
-  Serial.print("Temperatura = ");
+  //Serial.print("Temperatura = ");
   Serial.println(reading, 1);
-  delay(500);
+  
+  xbee.print("Temperatura = ");
+  xbee.println(reading, 1);
+
+  //delay(50);
  
  // converting that reading to voltage, for 3.3v arduino use 3.3
   float voltage = reading * 5.0;
   voltage /= 1024.0; 
  
  // print out the voltage
-  Serial.print(voltage); Serial.println(" volts");
+  //Serial.print(voltage); Serial.println(" volts");
   
   if(reading < 30){
     digitalWrite(verde, HIGH);//Função para acionamento na cor verde
