@@ -1,7 +1,7 @@
 // Pinos do 74HC595
-#define DATA_PIN 2   // DS
-#define LATCH_PIN 4  // STCP
-#define CLOCK_PIN 3 // SHCP
+#define DATA_PIN 4   // DS
+#define LATCH_PIN 5  // STCP
+#define CLOCK_PIN 6 // SHCP
 
 // Pino do LED independente
 #define LED_EXTRA 7
